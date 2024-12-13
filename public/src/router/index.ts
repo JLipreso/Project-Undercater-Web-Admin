@@ -29,11 +29,6 @@ const router = createRouter({
       component: () => import('@/views/blogs/index.vue'),
     },
     {
-      path: '/booking-activity',
-      name: 'booking_activity',
-      component: () => import('@/views/booking-activity/index.vue'),
-    },
-    {
       path: '/booking-calendar',
       name: 'booking_calendar',
       component: () => import('@/views/booking-calendar/index.vue'),

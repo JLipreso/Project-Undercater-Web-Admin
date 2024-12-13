@@ -6,9 +6,10 @@
         <SectionHeader/>
         <div class="content-wrapper">
           <div class="container-xxl flex-grow-1 container-p-y">
+            <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Booking /</span> Calendar</h4>
             <div class="card">
               <div class="card-body">
-                <p>If you’re a developer looking for most Powerful & comprehensive Bootstrap 5 HTML Admin Dashboard Template built for developers, rich with features, and highly customizable look no further than Sneat. We’ve followed the highest industry standards to bring you the very best admin template that is not only fast and easy to use but highly scalable. Offering ultimate convenience and flexibility, you’ll be able to build whatever application you want with very little hassle.</p>
+                <FullCalendar :options="calendarOptions" />
               </div>
             </div>
           </div>
@@ -22,9 +23,21 @@
   import { defineComponent } from 'vue';
   import SectionSidebar from "@/components/SectionSidebar.vue";
   import SectionHeader from "@/components/SectionHeader.vue";
+  import FullCalendar from '@fullcalendar/vue3'
+import dayGridPlugin from '@fullcalendar/daygrid'
+import interactionPlugin from '@fullcalendar/interaction'
 
   export default defineComponent({
-    components: { SectionSidebar, SectionHeader }
+    components: { SectionSidebar, SectionHeader, FullCalendar  },
+    data() {
+    return {
+      calendarOptions: {
+        plugins: [ dayGridPlugin, interactionPlugin ],
+        initialView: 'dayGridMonth'
+      }
+    }
+  }
+    
   });
 
 </script>

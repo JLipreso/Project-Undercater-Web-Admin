@@ -31,12 +31,6 @@
           <div data-i18n="Analytics">Booking Details</div>
         </router-link>
       </li>
-      <li class="menu-item" :class="{ 'active': $route.name == 'booking_activity' ? true : false }">
-        <router-link class="menu-link" to="/booking-activity">
-          <i class="menu-icon tf-icons bx bx-home-circle"></i>
-          <div data-i18n="Analytics">Booking Activity</div>
-        </router-link>
-      </li>
       <li class="menu-item" :class="{ 'active': $route.name == 'events' ? true : false }">
         <router-link class="menu-link" to="/events">
           <i class="menu-icon tf-icons bx bx-home-circle"></i>
