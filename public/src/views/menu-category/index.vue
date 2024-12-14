@@ -34,6 +34,7 @@
 
   import { defineComponent } from 'vue';
   import { Swiper, SwiperSlide } from 'swiper/vue';
+  import { getLocalUser } from '@/assets/ts/localStorage';
   import SectionSidebar from "@/components/SectionSidebar.vue";
   import SectionHeader from "@/components/SectionHeader.vue";
   import TableMenus from "./components/TableMenusCategory.vue";
@@ -45,6 +46,7 @@
     components: { CardMenuCategoryView, Swiper, SwiperSlide, CardMenuCategoryUpdate, CardMenuCategoryAdd, TableMenus, SectionSidebar, SectionHeader },
     data() {
       return {
+        admin: {} as any,
         swiper: {} as any,
       }
     },
@@ -61,7 +63,17 @@
       swipeToAdd() {
         this.swiper.slideTo(1);
       }
-    }
+    },
+    async mounted() {
+      await getLocalUser().then( async (admin) => {
+        if(admin) {
+          this.admin = admin;
+        }
+        else {
+          this.$router.replace('/');
+        }
+      });
+    },
   });
 
 </script>

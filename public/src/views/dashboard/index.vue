@@ -28,6 +28,7 @@
 <script lang="ts">
 
   import { defineComponent } from 'vue';
+  import { getLocalUser } from '@/assets/ts/localStorage';
   import SectionSidebar from "@/components/SectionSidebar.vue";
   import SectionHeader from "@/components/SectionHeader.vue";
   import CardCounts from './components/CardCounts.vue';
@@ -35,7 +36,22 @@
   import CardBookingRevenue from "./components/CardBookingRevenue.vue";
 
   export default defineComponent({
-    components: { CardBookingChart, CardBookingRevenue, CardCounts, SectionSidebar, SectionHeader }
+    components: { CardBookingChart, CardBookingRevenue, CardCounts, SectionSidebar, SectionHeader },
+    data() {
+      return {
+        admin: {} as any,
+      }
+    },
+    async mounted() {
+      await getLocalUser().then( async (admin) => {
+        if(admin) {
+          this.admin = admin;
+        }
+        else {
+          this.$router.replace('/');
+        }
+      });
+    },
   });
 
 </script>

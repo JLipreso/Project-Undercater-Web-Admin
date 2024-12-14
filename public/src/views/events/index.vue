@@ -50,11 +50,27 @@
 <script lang="ts">
 
   import { defineComponent } from 'vue';
+  import { getLocalUser } from '@/assets/ts/localStorage';
   import SectionSidebar from "@/components/SectionSidebar.vue";
   import SectionHeader from "@/components/SectionHeader.vue";
 
   export default defineComponent({
-    components: { SectionSidebar, SectionHeader }
+    components: { SectionSidebar, SectionHeader },
+    data() {
+      return {
+        admin: {} as any,
+      }
+    },
+    async mounted() {
+      await getLocalUser().then( async (admin) => {
+        if(admin) {
+          this.admin = admin;
+        }
+        else {
+          this.$router.replace('/');
+        }
+      });
+    },
   });
 
 </script>

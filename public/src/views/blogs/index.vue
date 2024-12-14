@@ -28,6 +28,7 @@
 <script lang="ts">
 
   import { defineComponent } from 'vue';
+  import { getLocalUser } from '@/assets/ts/localStorage';
   import SectionSidebar from "@/components/SectionSidebar.vue";
   import SectionHeader from "@/components/SectionHeader.vue";
   import CardBlog from './components/CardBlog.vue';
@@ -37,11 +38,22 @@
     components: { ModalCreateBlog, CardBlog, SectionSidebar, SectionHeader },
     data() {
       return {
+        admin: {} as any,
         modal: {
           create_blog_open: false
         }
       }
-    }
+    },
+    async mounted() {
+      await getLocalUser().then( async (admin) => {
+        if(admin) {
+          this.admin = admin;
+        }
+        else {
+          this.$router.replace('/');
+        }
+      });
+    },
   });
 
 </script>

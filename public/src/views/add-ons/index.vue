@@ -34,6 +34,7 @@
 
   import { defineComponent } from 'vue';
   import { Swiper, SwiperSlide } from 'swiper/vue';
+  import { getLocalUser } from '@/assets/ts/localStorage';
   import SectionSidebar from "@/components/SectionSidebar.vue";
   import SectionHeader from "@/components/SectionHeader.vue";
   import TableAddons from "./components/TableAddons.vue";
@@ -46,6 +47,7 @@
     data() {
       return {
         swiper: {} as any,
+        admin: {} as any,
       }
     },
     methods: {
@@ -61,7 +63,17 @@
       swipeToAdd() {
         this.swiper.slideTo(1);
       }
-    }
+    },
+    async mounted() {
+      await getLocalUser().then( async (admin) => {
+        if(admin) {
+          this.admin = admin;
+        }
+        else {
+          this.$router.replace('/');
+        }
+      });
+    },
   });
 
 </script>

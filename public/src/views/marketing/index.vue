@@ -33,6 +33,7 @@
 <script lang="ts">
 
   import { defineComponent } from 'vue';
+  import { getLocalUser } from '@/assets/ts/localStorage';
   import { Swiper, SwiperSlide } from 'swiper/vue';
   import SectionSidebar from "@/components/SectionSidebar.vue";
   import SectionHeader from "@/components/SectionHeader.vue";
@@ -45,6 +46,7 @@
     components: { CardMarketingView, TableMarketing, Swiper, SwiperSlide, CardMarketingUpdate, CardMarketingAdd, SectionSidebar, SectionHeader },
     data() {
       return {
+        admin: {} as any,
         swiper: {} as any,
       }
     },
@@ -61,7 +63,17 @@
       swipeToAdd() {
         this.swiper.slideTo(1);
       }
-    }
+    },
+    async mounted() {
+      await getLocalUser().then( async (admin) => {
+        if(admin) {
+          this.admin = admin;
+        }
+        else {
+          this.$router.replace('/');
+        }
+      });
+    },
   });
 
 </script>

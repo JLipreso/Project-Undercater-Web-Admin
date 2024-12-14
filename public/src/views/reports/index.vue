@@ -49,6 +49,7 @@
 <script lang="ts">
 
   import { defineComponent } from 'vue';
+  import { getLocalUser } from '@/assets/ts/localStorage';
   import SectionSidebar from "@/components/SectionSidebar.vue";
   import SectionHeader from "@/components/SectionHeader.vue";
   import ModalPrintReport from "./components/ModalPrintReport.vue";
@@ -57,6 +58,7 @@
     components: { ModalPrintReport, SectionSidebar, SectionHeader },
     data() {
       return {
+        admin: {} as any,
         modal_open: false
       }
     },
@@ -64,7 +66,17 @@
       printReport() {
         this.modal_open = true;
       }
-    }
+    },
+    async mounted() {
+      await getLocalUser().then( async (admin) => {
+        if(admin) {
+          this.admin = admin;
+        }
+        else {
+          this.$router.replace('/');
+        }
+      });
+    },
   });
 
 </script>
