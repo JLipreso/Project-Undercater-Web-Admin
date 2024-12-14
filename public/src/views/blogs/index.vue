@@ -14,8 +14,8 @@
               </div>
             </div>
             <div class="row">
-              <div class="col-sm-12 col-md-6 col-lg-4" v-for="(blog, bi) in 8" :key="bi">
-                <CardBlog/>
+              <div class="col-sm-12 col-md-6 col-lg-4" v-for="(blog, bi) in blogs" :key="bi">
+                <CardBlog :blog="blog" @edit="()=>{ modal.update_blog_open = true; }" />
               </div>
             </div>
           </div>
@@ -23,31 +23,52 @@
       </div>
     </div>
     <ModalCreateBlog :open="modal.create_blog_open" @closed="()=>{ modal.create_blog_open = false; }" />
+    <ModalEditBlog :open="modal.update_blog_open" @closed="()=>{ modal.update_blog_open = false; }" />
   </div>
 </template>
 <script lang="ts">
 
-  import { defineComponent } from 'vue';
+  import { defineComponent, toRaw } from 'vue';
   import { getLocalUser } from '@/assets/ts/localStorage';
+  import { variable } from '@/var';
   import SectionSidebar from "@/components/SectionSidebar.vue";
   import SectionHeader from "@/components/SectionHeader.vue";
   import CardBlog from './components/CardBlog.vue';
   import ModalCreateBlog from './components/ModalCreateBlog.vue';
-
+  import ModalEditBlog from './components/ModalEditBlog.vue';
+  import axios from 'axios';
+  
   export default defineComponent({
-    components: { ModalCreateBlog, CardBlog, SectionSidebar, SectionHeader },
+    components: { ModalEditBlog, ModalCreateBlog, CardBlog, SectionSidebar, SectionHeader },
     data() {
       return {
         admin: {} as any,
         modal: {
-          create_blog_open: false
-        }
+          create_blog_open: false,
+          update_blog_open: false,
+          update_blog_info: {} as any,
+        },
+        blogs: {} as any
+      }
+    },
+    methods: {
+      async fetchBlogs() {
+        await axios.get( variable()['api_main'] + "blog/fetchAll" ).then( async (response) => {
+          this.blogs = response.data;
+        });
+      },
+      openEditModal(blog: any) {
+        this.modal.update_blog_open = true;
+        this.modal.update_blog_info = blog;
       }
     },
     async mounted() {
       await getLocalUser().then( async (admin) => {
         if(admin) {
           this.admin = admin;
+          await this.fetchBlogs().then( async () => {
+            console.log("Blogs:", toRaw(this.$data));
+          });
         }
         else {
           this.$router.replace('/');

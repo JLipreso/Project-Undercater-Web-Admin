@@ -4,12 +4,21 @@
     <div class="card-body">
       <div class="form-group mt-4">
         <label>Theme name</label>
-        <input type="text" class="form-control form-control-lg">
+        <input :value="theme.name" type="text" class="form-control form-control-lg bg-white" readonly/>
       </div>
       <div class="form-group mt-4">
         <label>Description</label>
-        <textarea class="form-control form-control-lg"></textarea>
+        <textarea :value="theme.description" class="form-control form-control-lg bg-white" readonly></textarea>
       </div>
     </div>
   </div>
 </template>
+<script lang="ts">
+
+  import { defineComponent } from 'vue';
+
+  export default defineComponent({
+    props: ['theme']
+  });
+
+</script>

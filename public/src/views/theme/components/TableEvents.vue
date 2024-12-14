@@ -5,6 +5,7 @@
 			<table class="table">
 				<thead>
 					<tr>
+            <th style="width: 50px;">No</th>
 						<th>Theme</th>
 						<th style="width: 100px;">View</th>
 						<th style="width: 100px;">Update</th>
@@ -12,11 +13,12 @@
 					</tr>
 				</thead>
 				<tbody>
-					<tr>
-						<td>1</td>
-						<td><button class="btn btn-primary btn-sm" @click="onView({})">View</button></td>
-            <td><button class="btn btn-primary btn-sm" @click="onUpdate({})">Update</button></td>
-            <td><button class="btn btn-danger btn-sm" @click="onDelete({})">Delete</button></td>
+					<tr v-for="(theme, ei) in themes" :key="ei">
+						<td>{{ ei + 1 }}</td>
+            <td>{{ theme?.name }}</td>
+						<td><button class="btn btn-primary btn-sm" @click="onView(theme)">View</button></td>
+            <td><button class="btn btn-primary btn-sm" @click="onUpdate(theme)">Update</button></td>
+            <td><button class="btn btn-danger btn-sm" @click="onDelete(theme)">Delete</button></td>
 					</tr>
 				</tbody>
 			</table>
@@ -26,18 +28,54 @@
 <script lang="ts">
 
 	import { defineComponent } from 'vue';
+  import Swal from 'sweetalert2';
+  import axios from 'axios';
+import { variable } from '@/var';
 
 	export default defineComponent({
-		emits: ['view', 'update'],
+		emits: ['view', 'refresh'],
+    props: {
+      themes: {
+        default: {} as any,
+        type: Object
+      }
+    },
 		methods: {
 			onView(theme: any) {
-				this.$emit('view', {});
+				this.$emit('view', { data: theme });
 			},
 			onUpdate(theme: any) {
-				this.$emit('update', {});
+				this.$emit('update', { data: theme });
 			},
 			onDelete(theme: any) {
-
+        Swal.fire({
+          title: "Confirmation",
+          text: "Delete " + theme?.name + "?",
+          showCancelButton: true,
+          confirmButtonText: "Delete",
+          icon: "question"
+        }).then( async (result) => {
+          if (result.isConfirmed) {
+            await axios.get( variable()['api_main'] + "themes/delete?dataid=" + theme?.dataid ).then( async (response) => {
+              if(response.data?.success) {
+                Swal.fire({
+                  title: 'Success',
+                  text: response.data?.message,
+                  icon: 'success'
+                }).then( async () => {
+                  this.$emit('refresh');
+                });
+              }
+              else {
+                Swal.fire({
+                  title: 'Warning',
+                  text: response.data?.message,
+                  icon: 'warning'
+                });
+              }
+            });
+          }
+        });
 			}
 		}
 	});

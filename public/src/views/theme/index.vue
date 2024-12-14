@@ -15,13 +15,13 @@
             <div class="row">
               <div class="col-sm-12 col-md-5">
                 <swiper :slides-per-view="1" :space-between="50" @swiper="onSwiper">
-                  <swiper-slide class="swiper-no-swiping"><CardEventView/></swiper-slide>
-                  <swiper-slide class="swiper-no-swiping"><CardEventAdd/></swiper-slide>
-                  <swiper-slide class="swiper-no-swiping"><CardEventUpdate/></swiper-slide>
+                  <swiper-slide class="swiper-no-swiping"><CardEventView :theme="view.theme" /></swiper-slide>
+                  <swiper-slide class="swiper-no-swiping"><CardEventAdd @refresh="fetchThemes()" /></swiper-slide>
+                  <swiper-slide class="swiper-no-swiping"><CardEventUpdate @refresh="fetchThemes()" :theme="update.theme" /></swiper-slide>
                 </swiper>
               </div>
               <div class="col-sm-12 col-md-7">
-                <TableEvents @view="swipeToView" @update="swipeToUpdate" />
+                <TableEvents :themes="themes" @view="swipeToView" @refresh="fetchThemes()" @update="swipeToUpdate" />
               </div>
             </div>
           </div>
@@ -32,7 +32,7 @@
 </template>
 <script lang="ts">
 
-  import { defineComponent } from 'vue';
+  import { defineComponent, toRaw } from 'vue';
   import { Swiper, SwiperSlide } from 'swiper/vue';
   import { getLocalUser } from '@/assets/ts/localStorage';
   import SectionSidebar from "@/components/SectionSidebar.vue";
@@ -41,6 +41,8 @@
   import CardEventView from './components/CardEventView.vue';
   import CardEventAdd from "./components/CardEventAdd.vue";
   import CardEventUpdate from './components/CardEventUpdate.vue';
+  import axios from 'axios';
+  import { variable } from '@/var';
 
   export default defineComponent({
     components: { CardEventView, Swiper, SwiperSlide, CardEventUpdate, CardEventAdd, TableEvents, SectionSidebar, SectionHeader },
@@ -48,6 +50,13 @@
       return {
         admin: {} as any,
         swiper: {} as any,
+        themes: {} as any,
+        view: {
+          theme: {} as any
+        },
+        update: {
+          theme: {} as any
+        }
       }
     },
     methods: {
@@ -55,19 +64,30 @@
         this.swiper = event;
       },
       swipeToView(event: any) {
+        console.log(toRaw(event));
+        this.view.theme = event.data;
         this.swiper.slideTo(0);
       },
       swipeToUpdate(event: any) {
+        this.update.theme = event.data;
         this.swiper.slideTo(2);
       },
       swipeToAdd() {
         this.swiper.slideTo(1);
+      },
+      async fetchThemes() {
+        await axios.get( variable()['api_main'] + "themes/fetchAll" ).then( async (response) => {
+          this.themes = response.data;
+        });
       }
     },
     async mounted() {
       await getLocalUser().then( async (admin) => {
         if(admin) {
           this.admin = admin;
+          await this.fetchThemes().then( async () => {
+            console.log("Theme:", toRaw(this.$data));
+          });
         }
         else {
           this.$router.replace('/');
