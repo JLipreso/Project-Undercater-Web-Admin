@@ -7,8 +7,8 @@
         <div class="content-wrapper">
           <div class="container-xxl flex-grow-1 container-p-y">
             <div class="row">
-              <div class="col-sm-12 col-md-3 col-lg-2" v-for="(count, ci) in 12" :key="ci">
-                <CardCounts/>
+              <div class="col-sm-12 col-md-4 col-lg-3" v-for="(count, ci) in dashboard.counter" :key="ci">
+                <CardCounts :label="count?.label" :value="count?.value" />
               </div>
             </div>
             <div class="row mt-4">
@@ -27,25 +27,40 @@
 </template>
 <script lang="ts">
 
-  import { defineComponent } from 'vue';
+  import { defineComponent, toRaw } from 'vue';
   import { getLocalUser } from '@/assets/ts/localStorage';
+  import { variable } from '@/var';
   import SectionSidebar from "@/components/SectionSidebar.vue";
   import SectionHeader from "@/components/SectionHeader.vue";
   import CardCounts from './components/CardCounts.vue';
   import CardBookingChart from './components/CardBookingChart.vue';
   import CardBookingRevenue from "./components/CardBookingRevenue.vue";
-
+  import axios from 'axios';
+  
   export default defineComponent({
     components: { CardBookingChart, CardBookingRevenue, CardCounts, SectionSidebar, SectionHeader },
     data() {
       return {
         admin: {} as any,
+        dashboard: {
+          counter: {} as any
+        }
+      }
+    },
+    methods: {
+      async fetchCounter() {
+        await axios.get( variable()['api_main'] + "dashboard/counter" ).then( async (counter) => {
+          this.dashboard.counter = counter.data;
+        });
       }
     },
     async mounted() {
       await getLocalUser().then( async (admin) => {
         if(admin) {
           this.admin = admin;
+          await this.fetchCounter().then( async () => {
+            console.log("Dashboard:", toRaw(this.$data));
+          });
         }
         else {
           this.$router.replace('/');
