@@ -6,9 +6,36 @@
         <SectionHeader/>
         <div class="content-wrapper">
           <div class="container-xxl flex-grow-1 container-p-y">
+            <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Inquiry /</span> Masterlist</h4>
             <div class="card">
-              <div class="card-body">
-                <p>If you’re a developer looking for most Powerful & comprehensive Bootstrap 5 HTML Admin Dashboard Template built for developers, rich with features, and highly customizable look no further than Sneat. We’ve followed the highest industry standards to bring you the very best admin template that is not only fast and easy to use but highly scalable. Offering ultimate convenience and flexibility, you’ll be able to build whatever application you want with very little hassle.</p>
+              <h5 class="card-header">Manage Inquiry</h5>
+              <div class="table-responsive text-nowrap">
+                <table class="table">
+                  <thead>
+                    <tr>
+                      <th>No.</th>
+                      <th>Name</th>
+                      <th>Email</th>
+                      <th>Subject</th>
+                      <th>Message</th>
+                      <th>Date</th>
+                      <th style="width: 100px;">Done</th>
+                      <th style="width: 100px;">Delete</th>
+                    </tr>
+                  </thead>
+                  <tbody class="table-border-bottom-0">
+                    <tr>
+                      <td>1</td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td><button class="btn btn-primary btn-sm">Done</button></td>
+                      <td><button class="btn btn-danger btn-sm">Delete</button></td>
+                    </tr>
+                  </tbody>
+                </table>
               </div>
             </div>
           </div>
