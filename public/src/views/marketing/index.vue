@@ -7,67 +7,72 @@
         <div class="content-wrapper">
           <div class="container-xxl flex-grow-1 container-p-y">
             <div class="d-flex justify-content-between align-items-center py-3">
-              <h4 class="fw-bold py-3">Manage Menu</h4>
+              <h4 class="fw-bold">Manage Marketing</h4>
               <div class="d-flex">
-                <button class="btn btn-primary" @click="swipeToAdd()">Add Menu</button>
+                <input type="text" class="form-control me-3" placeholder="Search" />
+                <button class="btn btn-primary" style="width: 180px;" @click="()=>{ modal.create_marketing_open = true; }">Create</button>
               </div>
             </div>
             <div class="row">
-              <div class="col-sm-12 col-md-5">
-                <swiper :slides-per-view="1" :space-between="50" @swiper="onSwiper">
-                  <swiper-slide class="swiper-no-swiping"><CardMarketingView/></swiper-slide>
-                  <swiper-slide class="swiper-no-swiping"><CardMarketingAdd/></swiper-slide>
-                  <swiper-slide class="swiper-no-swiping"><CardMarketingUpdate/></swiper-slide>
-                </swiper>
-              </div>
-              <div class="col-sm-12 col-md-7">
-                <TableMarketing @view="swipeToView" @update="swipeToUpdate" />
+              <div class="col-sm-12 col-md-6 col-lg-4" v-for="(marketing, bi) in marketings" :key="bi">
+                <CardMarketing 
+                  :marketing="marketing" 
+                  @edit="openEditModal"
+                  @refresh="fetchMarketing()"
+                />
               </div>
             </div>
           </div>
         </div>
       </div>
     </div>
+    <ModalCreateMarketing :open="modal.create_marketing_open" @closed="()=>{ modal.create_marketing_open = false; }" @refresh="fetchMarketing()" />
+    <ModalEditMarketing :open="modal.update_marketing_open" :marketing="modal.update_marketing_info" @closed="()=>{ modal.update_marketing_open = false; }" />
   </div>
 </template>
 <script lang="ts">
 
-  import { defineComponent } from 'vue';
+  import { defineComponent, toRaw } from 'vue';
   import { getLocalUser } from '@/assets/ts/localStorage';
-  import { Swiper, SwiperSlide } from 'swiper/vue';
+  import { variable } from '@/var';
   import SectionSidebar from "@/components/SectionSidebar.vue";
   import SectionHeader from "@/components/SectionHeader.vue";
-  import TableMarketing from "./components/TableMarketing.vue";
-  import CardMarketingView from './components/CardMarketingView.vue';
-  import CardMarketingAdd from "./components/CardMarketingAdd.vue";
-  import CardMarketingUpdate from './components/CardMarketingUpdate.vue';
-
+  import CardMarketing from './components/CardMarketing.vue';
+  import ModalCreateMarketing from './components/ModalCreateMarketing.vue';
+  import ModalEditMarketing from './components/ModalEditMarketing.vue';
+  import axios from 'axios';
+  
   export default defineComponent({
-    components: { CardMarketingView, TableMarketing, Swiper, SwiperSlide, CardMarketingUpdate, CardMarketingAdd, SectionSidebar, SectionHeader },
+    components: { ModalEditMarketing, ModalCreateMarketing, CardMarketing, SectionSidebar, SectionHeader },
     data() {
       return {
         admin: {} as any,
-        swiper: {} as any,
+        modal: {
+          create_marketing_open: false,
+          update_marketing_open: false,
+          update_marketing_info: {} as any,
+        },
+        marketings: {} as any
       }
     },
     methods: {
-      onSwiper(event: any) {
-        this.swiper = event;
+      async fetchMarketing() {
+        await axios.get( variable()['api_main'] + "marketing/fetchAll" ).then( async (response) => {
+          this.marketings = response.data;
+        });
       },
-      swipeToView(event: any) {
-        this.swiper.slideTo(0);
-      },
-      swipeToUpdate(event: any) {
-        this.swiper.slideTo(2);
-      },
-      swipeToAdd() {
-        this.swiper.slideTo(1);
+      openEditModal(marketing: any) {
+        this.modal.update_marketing_open = true;
+        this.modal.update_marketing_info = marketing.data;
       }
     },
     async mounted() {
       await getLocalUser().then( async (admin) => {
         if(admin) {
           this.admin = admin;
+          await this.fetchMarketing().then( async () => {
+            console.log("Marketing:", toRaw(this.$data));
+          });
         }
         else {
           this.$router.replace('/');
