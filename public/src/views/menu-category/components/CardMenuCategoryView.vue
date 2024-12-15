@@ -4,12 +4,26 @@
     <div class="card-body">
       <div class="form-group mt-4">
         <label>Category name</label>
-        <input type="text" class="form-control form-control-lg">
+        <input v-model="form.name" type="text" class="form-control form-control-lg bg-white" readonly>
       </div>
       <div class="form-group mt-4">
         <label>Description</label>
-        <textarea class="form-control form-control-lg"></textarea>
+        <textarea v-model="form.description" class="form-control form-control-lg bg-white" readonly></textarea>
       </div>
     </div>
   </div>
 </template>
+<script lang="ts">
+
+	import { defineComponent } from 'vue';
+
+	export default defineComponent({
+    props: {
+      form: {
+        default: {},
+        type: Object
+      }
+    }
+  });
+
+</script>
