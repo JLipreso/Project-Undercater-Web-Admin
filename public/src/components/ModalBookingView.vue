@@ -85,6 +85,7 @@
   import { variable } from '@/var';
   import axios from 'axios';
   import Swal from 'sweetalert2';
+  import $ from 'jquery';
 
   export default defineComponent({
     emits: ['closed', 'refresh'],
@@ -114,7 +115,12 @@
           icon: "question"
         }).then( async (result) => {
           if (result.isConfirmed) {
-            await axios.get( variable()['api_main'] + "booking/approve?booking_dataid=" + this.booking?.header?.dataid ).then( async (response) => {
+            var args = {
+              booking_dataid: this.booking?.header?.dataid,
+              email: this.booking?.header?.email,
+              book_event: this.booking?.event?.name
+            };
+            await axios.get( variable()['api_main'] + "booking/approve?" + $.param(args) ).then( async (response) => {
               if(response.data?.success) {
                 Swal.fire({
                   title: 'Approved',
@@ -140,11 +146,16 @@
           title: "Confirmation",
           text: "Decline booking of " + this.booking?.header?.first_name + "?",
           showCancelButton: true,
-          confirmButtonText: "Approve",
+          confirmButtonText: "Decline",
           icon: "question"
         }).then( async (result) => {
           if (result.isConfirmed) {
-            await axios.get( variable()['api_main'] + "booking/decline?booking_dataid=" + this.booking?.header?.dataid ).then( async (response) => {
+            var args = {
+              booking_dataid: this.booking?.header?.dataid,
+              email: this.booking?.header?.email,
+              book_event: this.booking?.event?.name
+            };
+            await axios.get( variable()['api_main'] + "booking/decline?" + $.param(args)).then( async (response) => {
               if(response.data?.success) {
                 Swal.fire({
                   title: 'Decline',

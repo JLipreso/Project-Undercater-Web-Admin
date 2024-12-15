@@ -15,14 +15,13 @@
                   <option value="monthly">Monthly</option>
                   <option value="yearly">Yearly</option>
                 </select>
-                <button class="btn btn-primary me-3" @click="printReport()">Fetch</button>
                 <button class="btn btn-primary" @click="printTable()">Print</button>
                </div>
             </div>
             <div class="card">
               <h5 class="card-header">Manage Reports</h5>
               <div class="table-responsive text-nowrap">
-                <table class="table" id="tableList">
+                <table class="table" id="printable-report-booking">
                   <thead>
                     <tr>
                       <th>No.</th>
@@ -74,9 +73,6 @@
       }
     },
     methods: {
-      printReport() {
-        this.modal_open = true;
-      },
       async onScopeChanged() {
         console.log("Called:", this.scope);
         await this.fetchReport();
@@ -87,7 +83,7 @@
         });
       },
       printTable() {
-        const elem = document.getElementById('tableList');
+        const elem = document.getElementById('printable-report-booking');
         if(elem) {
           const table = elem.outerHTML;
           const printWindow = window.open('', '', 'height=600,width=800');

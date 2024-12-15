@@ -1,8 +1,65 @@
 <template>
   <div class="card">
-    <div class="card-header">Booking Revenue</div>
+    <div class="card-header">Revenue Chart</div>
     <div class="card-body">
-      <p>You have done 72% more sales today. Check your new badge in your profile.</p>
+      <Chart type="line" :data="chartData" :options="chartOptions" />
     </div>
   </div>
 </template>
+<script lang="ts">
+
+  import { defineComponent } from 'vue';
+  import Chart from "primevue/chart"
+
+  export default defineComponent({
+    name: "CardBookingChart",
+    components: { Chart },
+    data() {
+    return {
+      chartData: {
+        labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+        datasets: [
+          {
+            label: "Sales",
+            data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0.1, 0.1, 0.9],
+            fill: true,
+            borderColor: "#42A5F5", // Line color
+            backgroundColor: "rgba(66, 165, 245, 0.2)", // Area color
+            tension: 0.4, // Smooth curve
+          },
+        ],
+      },
+      // Chart configuration options
+      chartOptions: {
+        responsive: true,
+        plugins: {
+          legend: {
+            position: "top",
+          },
+          title: {
+            display: true,
+            text: "Monthly Revenue Data",
+          },
+        },
+        scales: {
+          x: {
+            title: {
+              display: true,
+              text: "Months",
+            },
+          },
+          y: {
+            title: {
+              display: true,
+              text: "Sales ($)",
+            },
+            beginAtZero: true,
+          },
+        },
+      },
+    };
+  },
+
+  });
+
+</script>

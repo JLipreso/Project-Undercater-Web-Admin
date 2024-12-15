@@ -5,6 +5,7 @@
         <div class="modal-header">
           <h5 class="modal-title">Event Details</h5>
         </div>
+        <img class="w-100" :src=" 'https://api-fileserver.jlipreso.com/' + event?.photo" />
         <div class="modal-body bg-light-gray" style="max-height: calc(100vh - 300px);overflow: auto;">
           <div class="card">
             <div class="card-body">

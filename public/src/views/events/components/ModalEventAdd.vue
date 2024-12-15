@@ -5,8 +5,10 @@
         <div class="modal-header">
           <h5 class="modal-title">Add Event</h5>
         </div>
+        <CardPhotoUploader @uploaded="onUploadSuccess" @fail="onUploadFail" />
         <div class="modal-body bg-light-gray" style="max-height: calc(100vh - 300px);overflow: auto;">
           <div class="card">
+            
             <div class="card-body">
               <div class="mb-3">
                 <label class="form-label">Event Name</label>
@@ -55,6 +57,7 @@
   import { variable } from '@/var';
   import axios from 'axios';
   import Swal from 'sweetalert2';
+  import CardPhotoUploader from "@/components/CardPhotoUploader.vue";
   import $ from 'jquery';
 
   export default defineComponent({
@@ -65,6 +68,7 @@
         type: Boolean
       }
     },
+    components: { CardPhotoUploader },
     data() {
       return {
         loading: false,
@@ -74,13 +78,24 @@
           package: '',
           min_occupancy: 0,
           max_occupancy: 0,
-          price: 0
+          price: 0,
+          photo: ''
         }
       }
     },
     methods: {
       closeModal() {
         this.$emit("closed");
+      },
+      onUploadSuccess(event: any) {
+        this.form.photo = event?.data?.filepath;
+      },
+      onUploadFail(event: any) {
+        Swal.fire({
+          title: 'Warning',
+          text: 'Fail to upload photo, try again later.',
+          icon: 'warning'
+        });
       },
       async saveEvent() {
         this.loading = true;

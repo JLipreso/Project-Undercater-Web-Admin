@@ -16,33 +16,69 @@
         </div>
       </div>
     </div>
+    <ModalBookingView :open="modal.view.open" :booking="modal.view.booking" @closed="()=>{ modal.view.open = false; }" @refresh="fetchBookingDates()" />
   </div>
 </template>
 <script lang="ts">
 
-  import { defineComponent } from 'vue';
+  import { defineComponent, toRaw } from 'vue';
   import { getLocalUser } from '@/assets/ts/localStorage';
   import SectionSidebar from "@/components/SectionSidebar.vue";
   import SectionHeader from "@/components/SectionHeader.vue";
+  import ModalBookingView from "@/components/ModalBookingView.vue";
   import FullCalendar from '@fullcalendar/vue3'
   import dayGridPlugin from '@fullcalendar/daygrid'
   import interactionPlugin from '@fullcalendar/interaction'
+  import axios from 'axios';
+  import { variable } from '@/var';
+
+  /**
+   * https://fullcalendar.io/docs/eventClick
+   * https://fullcalendar.io/docs/event-object
+   */
 
   export default defineComponent({
-    components: { SectionSidebar, SectionHeader, FullCalendar  },
+    components: { ModalBookingView, SectionSidebar, SectionHeader, FullCalendar  },
     data() {
       return {
         admin: {} as any,
         calendarOptions: {
           plugins: [ dayGridPlugin, interactionPlugin ],
-          initialView: 'dayGridMonth'
+          initialView: 'dayGridMonth',
+          events: [],
+          eventClick: this.eventDateClicked as any
+        },
+        modal: {
+          view: {
+            open: false,
+            booking: {} as any
+          }
         }
+      }
+    },
+    methods: {
+      async eventDateClicked(info: any) {
+        console.log("Dataid:", info?.event?.id);
+        await axios.get( variable()['api_main'] + "booking/fetchByDataID/" + info?.event?.id ).then( async (response) => {
+          this.modal.view.booking = response.data;
+          this.modal.view.open    = true;
+
+          console.log(response.data);
+        });
+      },
+      async fetchBookingDates() {
+        await axios.get( variable()['api_main'] + "booking/calendar" ).then( async (response) => {
+          this.calendarOptions.events = response.data;
+        });
       }
     },
     async mounted() {
       await getLocalUser().then( async (admin) => {
         if(admin) {
           this.admin = admin;
+          await this.fetchBookingDates().then( async () => {
+            console.log('Calendar:', toRaw(this.$data));
+          });
         }
         else {
           this.$router.replace('/');
