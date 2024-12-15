@@ -15,15 +15,19 @@
             </div>
             <div class="row">
               <div class="col-sm-12 col-md-6 col-lg-4" v-for="(blog, bi) in blogs" :key="bi">
-                <CardBlog :blog="blog" @edit="()=>{ modal.update_blog_open = true; }" />
+                <CardBlog 
+                  :blog="blog" 
+                  @edit="openEditModal"
+                  @refresh="fetchBlogs()"
+                />
               </div>
             </div>
           </div>
         </div>
       </div>
     </div>
-    <ModalCreateBlog :open="modal.create_blog_open" @closed="()=>{ modal.create_blog_open = false; }" />
-    <ModalEditBlog :open="modal.update_blog_open" @closed="()=>{ modal.update_blog_open = false; }" />
+    <ModalCreateBlog :open="modal.create_blog_open" @closed="()=>{ modal.create_blog_open = false; }" @refresh="fetchBlogs()" />
+    <ModalEditBlog :open="modal.update_blog_open" :blog="modal.update_blog_info" @closed="()=>{ modal.update_blog_open = false; }" />
   </div>
 </template>
 <script lang="ts">
@@ -59,7 +63,7 @@
       },
       openEditModal(blog: any) {
         this.modal.update_blog_open = true;
-        this.modal.update_blog_info = blog;
+        this.modal.update_blog_info = blog.data;
       }
     },
     async mounted() {

@@ -3,18 +3,23 @@
     <div class="modal-dialog" role="document">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title">Booking Details</h5>
+          <h5 class="modal-title">Update Blog</h5>
         </div>
         <hr/>
         <div class="modal-body" style="max-height: calc(100vh - 300px);overflow: auto;">
-          <div class="p-5 bg-dark"></div>
+          <CardPhotoUploader 
+            @uploaded="onUploadSuccess"
+            @fail="onUploadFail" 
+            btn_upload_text="Replace"
+            instruction="Select photo with png, jpg, jpeg file extensions for blog photo replacement."
+          />
           <div class="form-group mt-3">
             <label>Title</label>
             <input v-model="blog.title" type="text" class="form-control form-control-lg">
           </div>
           <div class="form-group mt-4">
             <label>Description</label>
-            <textarea v-model="blog.description" class="form-control form-control-lg"></textarea>
+            <textarea v-model="blog.description" class="form-control form-control-lg" style="min-height: 250px;"></textarea>
           </div>
         </div>
         <div class="modal-footer">
@@ -28,7 +33,12 @@
 <script lang="ts">
 
   import { defineComponent } from 'vue';
-
+  import { variable } from '@/var';
+  import CardPhotoUploader from "@/components/CardPhotoUploader.vue";
+  import Swal from 'sweetalert2';
+  import axios from 'axios';
+  import $ from 'jquery';
+  
   export default defineComponent({
     props: {
       open: {
@@ -36,10 +46,11 @@
         type: Boolean
       },
       blog: {
-        default: {} as any,
+        default: {},
         type: Object
       }
     },
+    components: { CardPhotoUploader },
     data() {
       return {}
     },
@@ -47,9 +58,36 @@
       closeModal() {
         this.$emit("closed");
       },
-      saveBlog() {
-        
-      }
+      async saveBlog() {
+        await axios.get( variable()['api_main'] + "blog/update?" + $.param(this.blog)).then( async (response) => {
+          if(response.data?.success) {
+            Swal.fire({
+              title: 'Success',
+              text: response.data?.message,
+              icon: 'success'
+            }).then( async () => {
+              this.$emit('refresh');
+            });
+          }
+          else {
+            Swal.fire({
+              title: 'Warning',
+              text: response.data?.message,
+              icon: 'warning'
+            });
+          }
+        });
+      },
+      onUploadSuccess(event: any) {
+        this.blog.photo = event?.data?.filepath;
+      },
+      onUploadFail(event: any) {
+        Swal.fire({
+          title: 'Warning',
+          text: 'Fail to replace photo, try again later.',
+          icon: 'warning'
+        });
+      },
     }
   });
 
