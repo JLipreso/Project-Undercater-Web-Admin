@@ -1,22 +1,24 @@
 <template>
   <div class="card">
-		<h5 class="card-header">Manage Theme</h5>
-    <div class="table-responsive text-nowrap">
+		<h5 class="card-header">Manage Menu</h5>
+    <div class="table-responsive text-nowrap" style="height: 600px;">
 			<table class="table">
 				<thead>
 					<tr>
-						<th>Theme</th>
+            <th style="width: 50px;">No.</th>
+						<th>Menu</th>
 						<th style="width: 100px;">View</th>
 						<th style="width: 100px;">Update</th>
 						<th style="width: 100px;">Delete</th>
 					</tr>
 				</thead>
 				<tbody>
-					<tr>
-						<td>1</td>
-						<td><button class="btn btn-primary btn-sm" @click="onView({})">View</button></td>
-            <td><button class="btn btn-primary btn-sm" @click="onUpdate({})">Update</button></td>
-            <td><button class="btn btn-danger btn-sm" @click="onDelete({})">Delete</button></td>
+					<tr v-for="(menu, mi) in menus" :key="mi">
+						<td>{{ mi + 1 }}</td>
+            <td>{{ menu?.name }}</td>
+						<td><button class="btn btn-primary btn-sm" @click="onView(menu)">View</button></td>
+            <td><button class="btn btn-primary btn-sm" @click="onUpdate(menu)">Update</button></td>
+            <td><button class="btn btn-danger btn-sm" @click="onDelete(menu)">Delete</button></td>
 					</tr>
 				</tbody>
 			</table>
@@ -25,19 +27,55 @@
 </template>
 <script lang="ts">
 
-	import { defineComponent } from 'vue';
-
+  import { defineComponent } from 'vue';
+	import { variable } from '@/var';
+  import axios from 'axios';
+  import Swal from 'sweetalert2';
+  
 	export default defineComponent({
-		emits: ['view', 'update'],
+		emits: ['view', 'update', 'refresh'],
+    props: {
+      menus: {
+        default: {},
+        type: Object
+      }
+    },
 		methods: {
-			onView(theme: any) {
-				this.$emit('view', {});
+			onView(menu: any) {
+				this.$emit('view', menu);
 			},
-			onUpdate(theme: any) {
-				this.$emit('update', {});
+			onUpdate(menu: any) {
+				this.$emit('update', menu);
 			},
-			onDelete(theme: any) {
-
+			onDelete(menu: any) {
+        Swal.fire({
+          title: 'Confirmation',
+          text: 'Delete ' + menu?.name + '?',
+          icon: 'question',
+          showCancelButton: true,
+          confirmButtonText: 'Delete'
+        }).then( async (result) => {
+          if(result.isConfirmed) {
+            await axios.get( variable()['api_main'] + "menu/delete?dataid=" + menu?.dataid ).then( async (response) => {
+              if(response.data?.success) {
+                Swal.fire({
+                  title: 'Success',
+                  text: response.data?.message,
+                  icon: 'success'
+                }).then( async () => {
+                  this.$emit('refresh');
+                });
+              }
+              else {
+                Swal.fire({
+                  title: 'Warning',
+                  text: response.data?.message,
+                  icon: 'warning'
+                });
+              }
+            });
+;          }
+        });
 			}
 		}
 	});

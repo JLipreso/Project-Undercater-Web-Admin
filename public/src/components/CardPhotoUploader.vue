@@ -11,7 +11,7 @@
       }"
     />
     <div class="card-body">
-      <h5>{{ instruction }}</h5>
+      <p>{{ instruction }}</p>
         <input class="d-none" type="file" ref="file" @change="loadImage($event)" accept="image/*"/>
         <div class="row">
           <div class="col-6">

@@ -30,10 +30,10 @@
 	import { defineComponent } from 'vue';
   import Swal from 'sweetalert2';
   import axios from 'axios';
-import { variable } from '@/var';
+  import { variable } from '@/var';
 
 	export default defineComponent({
-		emits: ['view', 'refresh'],
+		emits: ['view', 'refresh', 'update'],
     props: {
       themes: {
         default: {} as any,

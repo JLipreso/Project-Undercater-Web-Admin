@@ -18,7 +18,12 @@
   import { defineComponent } from 'vue';
 
   export default defineComponent({
-    props: ['theme']
+    props: {
+      theme: {
+        default: {},
+        type: Object
+      }
+    }
   });
 
 </script>

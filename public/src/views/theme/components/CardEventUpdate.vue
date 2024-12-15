@@ -26,7 +26,12 @@
 
   export default defineComponent({
     emits: ['refresh'],
-    props: ['theme'],
+    props: {
+      theme: {
+        default: {},
+        type: Object
+      }
+    },
     data() {
       return {
         form: {
