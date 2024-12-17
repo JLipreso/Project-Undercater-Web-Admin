@@ -1,6 +1,11 @@
 <template>
   <div class="card my-4">
-    <img class="marketing-cover-photo w-100 bg-dark" :src="marketing?.photo ? marketing?.fullpath : 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRK9aVGeIwDc_9na_hcvbjcH4oqbm-nWiMs-g&s' "/>
+    <div v-if="(marketing?.photo).includes('mp4')">
+      <video class="marketing-cover-photo w-100 bg-dark" :src="marketing?.photo ? marketing?.fullpath : ''" controls></video>
+    </div>
+    <div v-else>
+      <img class="marketing-cover-photo w-100 bg-dark" :src="marketing?.photo ? marketing?.fullpath : 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRK9aVGeIwDc_9na_hcvbjcH4oqbm-nWiMs-g&s' "/>
+    </div>
     <div class="card-body">
       <h3 class="text-primary">{{ marketing?.title }}</h3>
       <div>
@@ -72,7 +77,8 @@
     -webkit-line-clamp: 5;
     -webkit-box-orient: vertical; 
   }
-  img.marketing-cover-photo {
+  img.marketing-cover-photo,
+  video.marketing-cover-photo {
     height: 250px;
     object-fit: cover;
     object-position: center;

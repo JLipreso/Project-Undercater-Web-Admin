@@ -9,7 +9,7 @@
           <div class="row">
             <div class="col-sm-12 col-md-4">
               <swiper :slides-per-view="1" :space-between="0" @swiper="onSwiper">
-                <swiper-slide>
+                <swiper-slide class="swiper-no-swiping">
                   <div class="card">
                     <div class="card-body">
                       <h5 class="text-primary fw-bold">Event Details</h5>
@@ -44,7 +44,7 @@
                     </div>
                   </div>
                 </swiper-slide>
-                <swiper-slide>
+                <swiper-slide class="swiper-no-swiping">
                   <div class="card">
                     <div class="card-body">
                       <h5 class="text-primary fw-bold">Update Activity</h5>
@@ -72,7 +72,7 @@
                     </div>
                   </div>
                 </swiper-slide>
-                <swiper-slide>
+                <swiper-slide class="swiper-no-swiping">
                   <div class="card">
                     <div class="card-body">
                       <h5 class="text-primary fw-bold">Add Activity</h5>
@@ -100,14 +100,59 @@
                     </div>
                   </div>
                 </swiper-slide>
+                <swiper-slide class="swiper-no-swiping">
+                  <div class="card">
+                    <div class="card-body">
+                      <h5 class="text-primary fw-bold">Add Staff</h5>
+                      <table class="table">
+                        <thead>
+                          <tr>
+                            <th class="px-0 m-0">Name</th>
+                            <th>Role</th>
+                            <th style="width: 80px">Add</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr v-for="(st, si) in staff" :key="si">
+                            <td class="p-0 m-0">{{ (si + 1) }}. {{ st?.last_name + ' ' + st?.first_name }}</td>
+                            <td>{{  st?.role == 1 ? 'Admin':'Staff' }}</td>
+                            <td><button class="btn btn-primary btn-sm" @click="saveStaff(st)" >Add</button></td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </swiper-slide>
+                <swiper-slide class="swiper-no-swiping">
+                  <div class="card">
+                    <div class="card-body">
+                      <h5 class="text-primary fw-bold">Add Food</h5>
+                      <table class="table">
+                        <thead>
+                          <tr>
+                            <th class="px-0">Food Name</th>
+                            <th style="width: 80px">Add</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr v-for="(food, fi) in booking?.food" :key="fi">
+                            <td class="px-0">{{ food?.name }}</td>
+                            <td><button class="btn btn-primary btn-sm" @click="saveFood(food)">Add</button></td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </swiper-slide>
               </swiper>
             </div>
             <div class="col-sm-12 col-md-8">
               <div class="card">
                 <div class="card-body">
-                  <div class="d-flex justify-content-between align-items-center py-3">
-                    <h5 class="text-primary fw-bold">Event Activities</h5>
-                    <button class="btn btn-primary" @click="()=>{ swiper.slideTo(2) }" >Add Activity</button>
+                  <div class="d-flex justify-content-start align-items-center py-3">
+                    <button class="btn btn-primary me-2" @click="()=>{ swiper.slideTo(2) }" >Add Activity</button>
+                    <button class="btn btn-primary me-2" @click="onSwiperAddStaff()" >Add Staff</button>
+                    <button class="btn btn-primary me-2" @click="()=>{ swiper.slideTo(4) }" >Add Food</button>
                   </div>
                   <div class="table-responsive text-nowrap">
                     <table class="table">
@@ -146,7 +191,7 @@
 </template>
 <script lang="ts">
 
-  import { defineComponent } from 'vue';
+  import { defineComponent, toRaw } from 'vue';
   import { variable } from '@/var';
   import { Swiper, SwiperSlide } from 'swiper/vue';
   import axios from 'axios';
@@ -180,12 +225,19 @@
           title: '',
           description: '',
           status: '0'
-        }
+        },
+        staff: {} as any
       }
     },
     methods: {
       closeModal() {
         this.$emit("closed");
+      },
+      async onSwiperAddStaff() {
+        this.swiper.slideTo(3);
+        await axios.get( variable()['api_main'] + "users_system/fetchAll" ).then( async (staff) => {
+          this.staff = staff.data;
+        });
       },
       onSwiper(event: any) {
         this.swiper = event;
@@ -212,6 +264,64 @@
               this.form_update.title       = '';
               this.form_update.description = '';
               this.form_update.status      = '0';
+              await this.fetchActivities();
+            });
+          }
+          else {
+            Swal.fire({
+              title: 'Warning',
+              text: response.data?.message,
+              icon: 'warning'
+            });
+          }
+        });
+      },
+      async saveFood(event: any) {
+        var args = {
+          booking_dataid: this.booking?.header?.dataid,
+          title: 'FOOD: ' + event?.name,
+          description: event?.description,
+          status: 'Pending'
+        };
+        await axios.get( variable()['api_main'] + "booking_activity/add?" + $.param(args)).then( async (response) => {
+          if(response.data?.success) {
+            Swal.fire({
+              title: 'Added!',
+              text: response.data?.message,
+              icon: 'success'
+            }).then( async () => {
+              this.form_add.title       = '';
+              this.form_add.description = '';
+              this.form_add.status      = '0';
+              await this.fetchActivities();
+            });
+          }
+          else {
+            Swal.fire({
+              title: 'Warning',
+              text: response.data?.message,
+              icon: 'warning'
+            });
+          }
+        });
+      },
+      async saveStaff(event: any) {
+        var args = {
+          booking_dataid: this.booking?.header?.dataid,
+          title: 'STAFF: ' + event?.first_name + ' ' + event?.last_name,
+          description: 'No task assigned yet',
+          status: 'Pending'
+        };
+        await axios.get( variable()['api_main'] + "booking_activity/add?" + $.param(args)).then( async (response) => {
+          if(response.data?.success) {
+            Swal.fire({
+              title: 'Added!',
+              text: response.data?.message,
+              icon: 'success'
+            }).then( async () => {
+              this.form_add.title       = '';
+              this.form_add.description = '';
+              this.form_add.status      = '0';
               await this.fetchActivities();
             });
           }
@@ -284,6 +394,8 @@
         if(this.open) {
           this.fetchActivities().then( async () => {
             this.form_add.booking_dataid = this.booking?.header?.dataid;
+            console.log("Data:", this.$data);
+            console.log("Booking:", toRaw(this.booking));
           });
         }
       }

@@ -101,7 +101,7 @@
           title: "Confirmation",
           text: "Delete booking of " + booking?.header?.first_name + "?",
           showCancelButton: true,
-          confirmButtonText: "Approve",
+          confirmButtonText: "Delete",
           icon: "question"
         }).then( async (result) => {
           if (result.isConfirmed) {

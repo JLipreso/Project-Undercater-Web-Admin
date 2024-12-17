@@ -70,6 +70,7 @@
           var reader = new FileReader();
           reader.onload = (e) => {
             this.photo.coverPicked = e?.target?.result;
+            console.log("TEST:",this.$data);
           }
           reader.readAsDataURL(input.files[0]);
         }

@@ -31,6 +31,10 @@
                   <td>{{ booking?.header?.event_end_time }}</td>
                 </tr>
                 <tr>
+                  <td style="width: 180px;">Grand Total</td>
+                  <td>{{ toCurrencyFormat(booking?.header?.total_price) }}</td>
+                </tr>
+                <tr>
                   <td style="width: 180px;">Status</td>
                   <td>{{ booking?.status?.value }}</td>
                 </tr>
@@ -39,6 +43,58 @@
                 <button class="btn btn-danger w-25 me-4" @click="bookingDecline()">Decline</button>
                 <button class="btn btn-primary w-25" @click="bookingApprove()" >Approve</button>
               </div>
+            </div>
+          </div>
+          <h5 class="mt-4">Food</h5>
+          <div class="card">
+            <div class="card-body">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>No</th>
+                    <th>Name</th>
+                    <th>Category</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="(food, fi) in booking?.food">
+                    <td>{{ fi + 1 }}</td>
+                    <td>{{ food?.name }}</td>
+                    <td>{{ food?.category }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <h5 class="mt-4">Add-ons</h5>
+          <div class="card">
+            <div class="card-body">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>No</th>
+                    <th>Name</th>
+                    <th>Price</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="(addon, ai) in booking?.addons" :key="ai">
+                    <td>{{ ai + 1 }}</td>
+                    <td>{{ addon?.name }}</td>
+                    <td>{{ toCurrencyFormat(addon?.booking_addons_price) }}</td>
+                  </tr>
+                </tbody>
+              </table>
+              <div class="d-flex justify-content-start">
+                <p>Total: {{ toCurrencyFormat(booking?.addons_total) }}</p>
+              </div>
+            </div>
+          </div>
+          <h5 class="mt-4">Payment Receipt</h5>
+          <div class="card">
+            <img class="w-100" :src="'https://api-fileserver.jlipreso.com/' + booking?.header?.payment_receipt" />
+            <div class="card-body">
+              <p>Receipt uploaded as payment reference</p>
             </div>
           </div>
           <h5 class="mt-4">Customer Details</h5>
@@ -83,6 +139,7 @@
 
   import { defineComponent } from 'vue';
   import { variable } from '@/var';
+  import { toCurrency } from "@/assets/ts/formatter.ts";
   import axios from 'axios';
   import Swal from 'sweetalert2';
   import $ from 'jquery';
@@ -105,6 +162,9 @@
     methods: {
       closeModal() {
         this.$emit("closed");
+      },
+      toCurrencyFormat(amount: number) {
+        return toCurrency(amount);
       },
       async bookingApprove() {
         Swal.fire({

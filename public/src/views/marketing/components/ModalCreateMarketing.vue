@@ -6,7 +6,30 @@
           <h5 class="modal-title">Marketing Details</h5>
         </div>
         <div class="modal-body" style="max-height: calc(100vh - 300px);overflow: auto;">
-          <CardPhotoUploader @uploaded="onUploadSuccess" @fail="onUploadFail" />
+          <swiper :slides-per-view="1" :space-between="50" @swiper="onSwiper">
+            <swiper-slide>
+              <CardPhotoUploader 
+                @uploaded="onUploadSuccess"
+                @fail="onUploadFail"
+                instruction="Upload photo with png, jpg, jpeg file extension"
+              />
+            </swiper-slide>
+            <swiper-slide>
+              <CardVideoUploader
+                @uploaded="onUploadSuccess"
+                @fail="onUploadFail"
+                instruction="Upload video with mp4 extension"
+              />
+            </swiper-slide>
+          </swiper>
+          <div class="form-group mt-3">
+            <label>File Type</label>
+            <select class="form-control form-control-lg" @change="onFileTypeChanged">
+              <option value="0">Select File Type</option>
+              <option value="photo">Photo</option>
+              <option value="video">Video</option>
+            </select>
+          </div>
           <div class="form-group mt-3">
             <label>Title</label>
             <input v-model="form.title" type="text" class="form-control form-control-lg">
@@ -28,6 +51,8 @@
 
   import { defineComponent } from 'vue';
   import { variable } from '@/var';
+  import { Swiper, SwiperSlide } from 'swiper/vue';
+  import CardVideoUploader from "@/components/CardVideoUploader.vue";
   import CardPhotoUploader from "@/components/CardPhotoUploader.vue";
   import Swal from 'sweetalert2';
   import axios from 'axios';
@@ -40,9 +65,10 @@
         type: Boolean
       }
     },
-    components: { CardPhotoUploader },
+    components: { CardVideoUploader, CardPhotoUploader, Swiper, SwiperSlide },
     data() {
       return {
+        swiper: {} as any,
         form: {
           title: '',
           content: '',
@@ -52,6 +78,17 @@
       }
     },
     methods: {
+      onFileTypeChanged(event: any) {
+        if(event?.target.value == 'photo') {
+          this.swiper.slideTo(0);
+        }
+        else if(event?.target.value == 'video') {
+          this.swiper.slideTo(1);
+        }
+      },
+      onSwiper(event: any) {
+        this.swiper = event;
+      },
       closeModal() {
         this.$emit("closed");
       },
