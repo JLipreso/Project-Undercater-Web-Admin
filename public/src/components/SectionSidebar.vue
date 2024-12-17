@@ -76,7 +76,7 @@
       <li class="menu-item" :class="{ 'active': $route.name == 'marketing' ? true : false }">
         <router-link class="menu-link" to="/marketing">
           <i class="menu-icon bi bi-file-spreadsheet"></i>
-          <div data-i18n="Analytics">Merketing</div>
+          <div data-i18n="Analytics">Marketing</div>
         </router-link>
       </li>
       <li class="menu-item" :class="{ 'active': $route.name == 'reports' ? true : false }">

@@ -196,6 +196,7 @@
   import { Swiper, SwiperSlide } from 'swiper/vue';
   import axios from 'axios';
   import Swal from 'sweetalert2';
+  import $ from 'jquery';
 
   export default defineComponent({
     emits: ['closed', 'refresh'],
