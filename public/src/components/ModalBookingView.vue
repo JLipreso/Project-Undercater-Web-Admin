@@ -10,34 +10,36 @@
           <div class="card">
             <div class="card-body">
               <table class="table-borderless">
-                <tr>
-                  <td style="width: 180px;">Event</td>
-                  <td>{{ booking?.event?.name }}</td>
-                </tr>
-                <tr>
-                  <td style="width: 180px;">Location Type</td>
-                  <td>{{ booking?.location?.value }}</td>
-                </tr>
-                <tr>
-                  <td style="width: 180px;">Date</td>
-                  <td>{{ booking?.header?.event_date }}</td>
-                </tr>
-                <tr>
-                  <td style="width: 180px;">Check In</td>
-                  <td>{{ booking?.header?.event_start_time }}</td>
-                </tr>
-                <tr>
-                  <td style="width: 180px;">Check Out</td>
-                  <td>{{ booking?.header?.event_end_time }}</td>
-                </tr>
-                <tr>
-                  <td style="width: 180px;">Grand Total</td>
-                  <td>{{ toCurrencyFormat(booking?.header?.total_price) }}</td>
-                </tr>
-                <tr>
-                  <td style="width: 180px;">Status</td>
-                  <td>{{ booking?.status?.value }}</td>
-                </tr>
+                <tbody>
+                  <tr>
+                    <td style="width: 180px;">Event</td>
+                    <td>{{ booking?.event?.name }}</td>
+                  </tr>
+                  <tr>
+                    <td style="width: 180px;">Location Type</td>
+                    <td>{{ booking?.location?.value }}</td>
+                  </tr>
+                  <tr>
+                    <td style="width: 180px;">Date</td>
+                    <td>{{ booking?.header?.event_date }}</td>
+                  </tr>
+                  <tr>
+                    <td style="width: 180px;">Check In</td>
+                    <td>{{ booking?.header?.event_start_time }}</td>
+                  </tr>
+                  <tr>
+                    <td style="width: 180px;">Check Out</td>
+                    <td>{{ booking?.header?.event_end_time }}</td>
+                  </tr>
+                  <tr>
+                    <td style="width: 180px;">Grand Total</td>
+                    <td>{{ toCurrencyFormat(booking?.header?.total_price) }}</td>
+                  </tr>
+                  <tr>
+                    <td style="width: 180px;">Status</td>
+                    <td>{{ booking?.status?.value }}</td>
+                  </tr>
+                </tbody>
               </table>
               <div class="d-flex justify-content-end mt-4">
                 <button class="btn btn-danger w-25 me-4" @click="bookingDecline()">Decline</button>

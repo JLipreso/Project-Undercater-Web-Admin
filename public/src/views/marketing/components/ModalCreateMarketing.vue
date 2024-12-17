@@ -7,14 +7,14 @@
         </div>
         <div class="modal-body" style="max-height: calc(100vh - 300px);overflow: auto;">
           <swiper :slides-per-view="1" :space-between="50" @swiper="onSwiper">
-            <swiper-slide>
+            <swiper-slide class="swiper-no-swiping">
               <CardPhotoUploader 
                 @uploaded="onUploadSuccess"
                 @fail="onUploadFail"
                 instruction="Upload photo with png, jpg, jpeg file extension"
               />
             </swiper-slide>
-            <swiper-slide>
+            <swiper-slide class="swiper-no-swiping">
               <CardVideoUploader
                 @uploaded="onUploadSuccess"
                 @fail="onUploadFail"
