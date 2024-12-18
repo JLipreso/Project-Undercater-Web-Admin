@@ -13,10 +13,10 @@
             </div>
             <div class="row mt-4">
               <div class="col-sm-12 col-md-6">
-                <CardBookingChart/>
+                <CardBookingChart :chart="dashboard.chart?.sale"/>
               </div>
               <div class="col-sm-12 col-md-6">
-                <CardBookingRevenue/>
+                <CardBookingRevenue :chart="dashboard.chart?.revenue" />
               </div>
             </div>
           </div>
@@ -43,7 +43,8 @@
       return {
         admin: {} as any,
         dashboard: {
-          counter: {} as any
+          counter: {} as any,
+          chart: {} as any
         }
       }
     },
@@ -52,6 +53,11 @@
         await axios.get( variable()['api_main'] + "dashboard/counter" ).then( async (counter) => {
           this.dashboard.counter = counter.data;
         });
+      },
+      async fetchChart() {
+        await axios.get( variable()['api_main'] + "dashboard/chart" ).then( async (chart) => {
+          this.dashboard.chart = chart.data;
+        });
       }
     },
     async mounted() {
@@ -59,7 +65,9 @@
         if(admin) {
           this.admin = admin;
           await this.fetchCounter().then( async () => {
-            console.log("Dashboard:", toRaw(this.$data));
+            await this.fetchChart().then( async () => {
+              console.log("Dashboard:", toRaw(this.$data));
+            });
           });
         }
         else {
