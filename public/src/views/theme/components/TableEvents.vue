@@ -31,6 +31,7 @@
   import Swal from 'sweetalert2';
   import axios from 'axios';
   import { variable } from '@/var';
+  import { getLocalUser } from '@/assets/ts/localStorage';
 
 	export default defineComponent({
 		emits: ['view', 'refresh', 'update'],
@@ -47,33 +48,44 @@
 			onUpdate(theme: any) {
 				this.$emit('update', { data: theme });
 			},
-			onDelete(theme: any) {
-        Swal.fire({
-          title: "Confirmation",
-          text: "Delete " + theme?.name + "?",
-          showCancelButton: true,
-          confirmButtonText: "Delete",
-          icon: "question"
-        }).then( async (result) => {
-          if (result.isConfirmed) {
-            await axios.get( variable()['api_main'] + "themes/delete?dataid=" + theme?.dataid ).then( async (response) => {
-              if(response.data?.success) {
-                Swal.fire({
-                  title: 'Success',
-                  text: response.data?.message,
-                  icon: 'success'
-                }).then( async () => {
-                  this.$emit('refresh');
-                });
-              }
-              else {
-                Swal.fire({
-                  title: 'Warning',
-                  text: response.data?.message,
-                  icon: 'warning'
+			async onDelete(theme: any) {
+        await getLocalUser().then( async (user) => {
+          if(user.role == 1) {
+            Swal.fire({
+              title: "Confirmation",
+              text: "Delete " + theme?.name + "?",
+              showCancelButton: true,
+              confirmButtonText: "Delete",
+              icon: "question"
+            }).then( async (result) => {
+              if (result.isConfirmed) {
+                await axios.get( variable()['api_main'] + "themes/delete?dataid=" + theme?.dataid ).then( async (response) => {
+                  if(response.data?.success) {
+                    Swal.fire({
+                      title: 'Success',
+                      text: response.data?.message,
+                      icon: 'success'
+                    }).then( async () => {
+                      this.$emit('refresh');
+                    });
+                  }
+                  else {
+                    Swal.fire({
+                      title: 'Warning',
+                      text: response.data?.message,
+                      icon: 'warning'
+                    });
+                  }
                 });
               }
             });
+          }
+          else {
+            Swal.fire({
+            title: 'Action denied',
+            text: 'Only administrator level has permission to delete',
+            icon: 'error'
+          });
           }
         });
 			}

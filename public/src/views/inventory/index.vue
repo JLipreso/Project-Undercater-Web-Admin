@@ -167,24 +167,35 @@
         });
       },
       async deleteItem(item: any) {
-        Swal.fire({
-          title: 'Success',
-          text: 'Delete ' + item?.name + '?',
-          icon: 'question',
-          showCancelButton: true,
-          confirmButtonText: 'Delete',
-        }).then( async (result) => {
-          if(result.isConfirmed) {
-            await axios.get( variable()['api_main'] + "inventory_stocks/delete?dataid=" + item?.dataid ).then( async (response) => {
-              if(response.data?.success) {
-                Swal.fire({
-                  title: 'Success',
-                  text: response.data?.message,
-                  icon: 'success'
-                }).then( async () => {
-                  await this.fetchAllInventory();
+        await getLocalUser().then( async (user) => {
+          if(user?.role == 1) {
+            Swal.fire({
+              title: 'Success',
+              text: 'Delete ' + item?.name + '?',
+              icon: 'question',
+              showCancelButton: true,
+              confirmButtonText: 'Delete',
+            }).then( async (result) => {
+              if(result.isConfirmed) {
+                await axios.get( variable()['api_main'] + "inventory_stocks/delete?dataid=" + item?.dataid ).then( async (response) => {
+                  if(response.data?.success) {
+                    Swal.fire({
+                      title: 'Success',
+                      text: response.data?.message,
+                      icon: 'success'
+                    }).then( async () => {
+                      await this.fetchAllInventory();
+                    });
+                  }
                 });
               }
+            });
+          }
+          else {
+            Swal.fire({
+              title: 'Action denied',
+              text: 'Only administrator level has permission to delete',
+              icon: 'error'
             });
           }
         });

@@ -73,34 +73,46 @@
         });
       },
       async deleteInquiry(inquiry: any) {
-        Swal.fire({
-          title: 'Success',
-          text: 'Delete inquiry of ' + inquiry?.name + '?',
-          icon: 'question',
-          showCancelButton: true,
-          confirmButtonText: 'Delete',
-        }).then( async (result) => {
-          if(result.isConfirmed) {
-            await axios.get( variable()['api_main'] + "inquiry/delete?dataid=" + inquiry?.dataid ).then( async (response) => {
-              if(response.data?.success) {
-                Swal.fire({
-                  title: 'Success',
-                  text: response.data?.message,
-                  icon: 'success'
-                }).then( async () => {
-                  await this.fetchFetch();
-                });
-              }
-              else {
-                Swal.fire({
-                  title: 'Warning',
-                  text: response.data?.message,
-                  icon: 'warning'
+        await getLocalUser().then( async (user) => {
+          if(user?.role == 1) {
+            Swal.fire({
+              title: 'Success',
+              text: 'Delete inquiry of ' + inquiry?.name + '?',
+              icon: 'question',
+              showCancelButton: true,
+              confirmButtonText: 'Delete',
+            }).then( async (result) => {
+              if(result.isConfirmed) {
+                await axios.get( variable()['api_main'] + "inquiry/delete?dataid=" + inquiry?.dataid ).then( async (response) => {
+                  if(response.data?.success) {
+                    Swal.fire({
+                      title: 'Success',
+                      text: response.data?.message,
+                      icon: 'success'
+                    }).then( async () => {
+                      await this.fetchFetch();
+                    });
+                  }
+                  else {
+                    Swal.fire({
+                      title: 'Warning',
+                      text: response.data?.message,
+                      icon: 'warning'
+                    });
+                  }
                 });
               }
             });
           }
+          else {
+            Swal.fire({
+              title: 'Action denied',
+              text: 'Only administrator level has permission to delete',
+              icon: 'error'
+            });
+          }
         });
+            
       }
     },
     async mounted() {

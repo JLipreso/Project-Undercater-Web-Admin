@@ -41,9 +41,11 @@
                   </tr>
                 </tbody>
               </table>
-              <div class="d-flex justify-content-end mt-4">
-                <button class="btn btn-danger w-25 me-4" @click="bookingDecline()">Decline</button>
-                <button class="btn btn-primary w-25" @click="bookingApprove()" >Approve</button>
+              <div v-show="user?.role == 1 ? true : false ">
+                <div class="d-flex justify-content-end mt-4">
+                  <button class="btn btn-danger w-25 me-4" @click="bookingDecline()">Decline</button>
+                  <button class="btn btn-primary w-25" @click="bookingApprove()" >Approve</button>
+                </div>
               </div>
             </div>
           </div>
@@ -139,11 +141,12 @@
 </template>
 <script lang="ts">
 
-  import { defineComponent } from 'vue';
+  import { defineComponent, toRaw } from 'vue';
   import { variable } from '@/var';
   import { toCurrency } from "@/assets/ts/formatter.ts";
   import axios from 'axios';
   import Swal from 'sweetalert2';
+  import { getLocalUser } from '@/assets/ts/localStorage';
   import $ from 'jquery';
 
   export default defineComponent({
@@ -159,7 +162,9 @@
       }
     },
     data() {
-      return {}
+      return {
+        user: {} as any
+      }
     },
     methods: {
       closeModal() {
@@ -237,6 +242,14 @@
             });
           }
         }); 
+      }
+    },
+    watch: {
+      open: async function () {
+        await getLocalUser().then( async (user) => {
+          this.user = user;
+          console.log("Booking View:", toRaw(this.$data));
+        });
       }
     }
   });

@@ -97,34 +97,43 @@
         this.modal.activity.open      = true;
       },
       async onDelete(booking: any) {
-        Swal.fire({
-          title: "Confirmation",
-          text: "Delete booking of " + booking?.header?.first_name + "?",
-          showCancelButton: true,
-          confirmButtonText: "Delete",
-          icon: "question"
-        }).then( async (result) => {
-          if (result.isConfirmed) {
-            await axios.get( variable()['api_main'] + "booking/delete?booking_dataid=" + booking?.header?.dataid ).then( async (response) => {
-              if(response.data?.success) {
-                Swal.fire({
-                  title: 'Deleted',
-                  text: response.data?.message,
-                  icon: 'success'
-                }).then( async () => {
-                  await this.fetchBooking();
-                });
-              }
-              else {
-                Swal.fire({
-                  title: 'Warning',
-                  text: response.data?.message,
-                  icon: 'warning'
-                });
-              }
-            });
-          }
-        });
+        if(this.admin?.role == 1) {
+          Swal.fire({
+            title: "Confirmation",
+            text: "Delete booking of " + booking?.header?.first_name + "?",
+            showCancelButton: true,
+            confirmButtonText: "Delete",
+            icon: "question"
+          }).then( async (result) => {
+            if (result.isConfirmed) {
+              await axios.get( variable()['api_main'] + "booking/delete?booking_dataid=" + booking?.header?.dataid ).then( async (response) => {
+                if(response.data?.success) {
+                  Swal.fire({
+                    title: 'Deleted',
+                    text: response.data?.message,
+                    icon: 'success'
+                  }).then( async () => {
+                    await this.fetchBooking();
+                  });
+                }
+                else {
+                  Swal.fire({
+                    title: 'Warning',
+                    text: response.data?.message,
+                    icon: 'warning'
+                  });
+                }
+              });
+            }
+          });
+        }
+        else {
+          Swal.fire({
+            title: 'Action denied',
+            text: 'Only administrator level has permission to delete a booking',
+            icon: 'error'
+          });
+        }
       }
     },
     async mounted() {

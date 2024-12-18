@@ -100,34 +100,43 @@
         this.modal.update.open  = true;
       },
       onModalDelete(event: any) {
-        Swal.fire({
-          title: "Confirmation",
-          text: "Delete " + event?.name + "?",
-          showCancelButton: true,
-          confirmButtonText: "Delete",
-          icon: "question"
-        }).then( async (result) => {
-          if (result.isConfirmed) {
-            await axios.get( variable()['api_main'] + "events/delete?dataid=" + event?.dataid ).then( async (response) => {
-              if(response.data?.success) {
-                Swal.fire({
-                  title: 'Success',
-                  text: response.data?.message,
-                  icon: 'success'
-                }).then( async () => {
-                  await this.fetchEvents();
-                });
-              }
-              else {
-                Swal.fire({
-                  title: 'Warning',
-                  text: response.data?.message,
-                  icon: 'warning'
-                });
-              }
-            });
-          }
-        });
+        if(this.admin?.role == 1) {
+          Swal.fire({
+            title: "Confirmation",
+            text: "Delete " + event?.name + "?",
+            showCancelButton: true,
+            confirmButtonText: "Delete",
+            icon: "question"
+          }).then( async (result) => {
+            if (result.isConfirmed) {
+              await axios.get( variable()['api_main'] + "events/delete?dataid=" + event?.dataid ).then( async (response) => {
+                if(response.data?.success) {
+                  Swal.fire({
+                    title: 'Success',
+                    text: response.data?.message,
+                    icon: 'success'
+                  }).then( async () => {
+                    await this.fetchEvents();
+                  });
+                }
+                else {
+                  Swal.fire({
+                    title: 'Warning',
+                    text: response.data?.message,
+                    icon: 'warning'
+                  });
+                }
+              });
+            }
+          });
+        }
+        else {
+          Swal.fire({
+            title: 'Action denied',
+            text: 'Only administrator level has permission to delete',
+            icon: 'error'
+          });
+        }
       },
       async fetchEvents() {
         await axios.get( variable()['api_main'] + "events/fetchAll").then( async (response) => {

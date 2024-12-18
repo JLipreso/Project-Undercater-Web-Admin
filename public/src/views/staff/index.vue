@@ -9,7 +9,7 @@
             <div class="d-flex justify-content-between align-items-center py-3">
               <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Staff /</span> Masterlist</h4>
               <div class="d-flex">
-                <button class="btn btn-primary" @click="()=>{ modal.create.open = true; }">Add Staff</button>
+                <button class="btn btn-primary" @click="addStaff()">Add Staff</button>
               </div>
             </div>
             <div class="card">
@@ -68,7 +68,7 @@
   import ModalUpdateStaff from "./components/ModalUpdateStaff.vue";
   import ModalAddStaff from './components/ModalAddStaff.vue';
   import axios from 'axios';
-import Swal from 'sweetalert2';
+  import Swal from 'sweetalert2';
   
   export default defineComponent({
     components: { ModalAddStaff, ModalUpdateStaff, SectionSidebar, SectionHeader },
@@ -88,6 +88,20 @@ import Swal from 'sweetalert2';
       }
     },
     methods: {
+      async addStaff() {
+        await getLocalUser().then( async (user) => {
+          if(user?.role == 1) {
+            this.modal.create.open = true;
+          }
+          else {
+            Swal.fire({
+              title: 'Action denied',
+              text: 'Only administrator level has permission to add a staff',
+              icon: 'error'
+            });
+          }
+        });
+      },
       async fetchStaff() {
         await axios.get( variable()['api_main'] + "users_system/fetchAll" ).then( async (response) => {
           this.list = response.data;

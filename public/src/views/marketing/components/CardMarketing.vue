@@ -24,6 +24,7 @@
 
   import { defineComponent } from 'vue';
   import { variable } from '@/var';
+  import { getLocalUser } from '@/assets/ts/localStorage';
   import axios from 'axios';
   import Swal from 'sweetalert2';
 
@@ -32,35 +33,45 @@
     props: ['marketing'],
     methods: {
       async deleteMarketing() {
-        Swal.fire({
-          title: 'Confirmation',
-          text: 'Delete ' + this.marketing?.title + '?',
-          icon: 'question',
-          showCancelButton: true,
-          confirmButtonText: 'Delete',
-        }).then( async (result) => {
-          if(result.isConfirmed) {
-            await axios.get( variable()['api_main'] + "marketing/delete?dataid=" + this.marketing?.dataid ).then( async (response) => {
-              if(response.data?.success) {
-                Swal.fire({
-                  title: 'Success',
-                  text: response.data?.message,
-                  icon: 'success'
-                }).then( async () => {
-                  this.$emit('refresh');
-                });
-              }
-              else {
-                Swal.fire({
-                  title: 'Warning',
-                  text: response.data?.message,
-                  icon: 'warning'
-                });
-              }
+        await getLocalUser().then( async (user) => {
+          if(user?.role == 1) {
+            Swal.fire({
+            title: 'Confirmation',
+            text: 'Delete ' + this.marketing?.title + '?',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Delete',
+          }).then( async (result) => {
+            if(result.isConfirmed) {
+              await axios.get( variable()['api_main'] + "marketing/delete?dataid=" + this.marketing?.dataid ).then( async (response) => {
+                if(response.data?.success) {
+                  Swal.fire({
+                    title: 'Success',
+                    text: response.data?.message,
+                    icon: 'success'
+                  }).then( async () => {
+                    this.$emit('refresh');
+                  });
+                }
+                else {
+                  Swal.fire({
+                    title: 'Warning',
+                    text: response.data?.message,
+                    icon: 'warning'
+                  });
+                }
+              });
+            }
+          });
+          }
+          else {
+            Swal.fire({
+              title: 'Action denied',
+              text: 'Only administrator level has permission to delete',
+              icon: 'error'
             });
           }
-        });
-          
+        }); 
       },
       editModal(marketing: any) {
         this.$emit('edit', { data: marketing });
